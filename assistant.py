@@ -103,7 +103,7 @@ class NameMap:
         return text
 
     def save_plain(self, dest):
-        with open(dest, 'w', encoding='utf-8') as f:
+        with open(dest, 'w', encoding='utf-8', newline='\n') as f:
             f.write(self.text_plain())
 
     def iter_chr(self):
