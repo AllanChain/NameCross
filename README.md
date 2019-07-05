@@ -27,6 +27,10 @@ Where `-` represents an unused block. Note when you expand a character into a `1
 
 其中`-`代表一个未被使用的空格。注意当你让一个字母占据`1 * 1`的格子而不是`1 * 2`时，它会大约变成一个正方形。
 
+> Okey, I know there are two `cyy` and `sc`
+> 
+> 好吧，我知道它有两个`sc`和`cyy`
+
 Other solutions can be found at `solutions/`
 
 你能在`solution/`文件夹中找到更多解
