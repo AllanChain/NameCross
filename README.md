@@ -4,23 +4,42 @@ Make a cross maze to include everyone's name! The connection made up a whole pic
 把所有人的名字组合成一个交叉迷宫！并且整个迷宫是一个整体，你不能把迷宫分成两部分而不分裂任何一个名字。
 
 ## Perfect Example
-As far as I can see, the maze below is perfect:
+As far as I can see, the mazes below is perfect (No.2 and 3 is pruned by me):
 
-我觉得下面这个迷宫是完美的：
+我觉得下面这几个迷宫是完美的（图2和图3是我修过的）：
 
 ```
-------------
-------------
-------------
-----wdlsry--
---xjxym-----
-cjkphrwswn--
-szlscsyjx---
-lyfscyylyc--
-tybtdsszc---
--tjyjzqg----
-whh-cyyz----
-zmh---b-----
+------------  ------------  ------------  ------------
+------------  ------------  ------------  ------------
+------------  ------------  ------------  ------------
+------------  ----wdlsry--  --xklsry----  ----zgzss---
+lsry----pszl  --xjxym-----  --sltzmh----  -d--mpszc---
+-wdlhrwhhzmh  cjkphrwswn--  jxzdjcwdlx--  -jxjhhzlycj-
+-nxycsydjcw-  szlscsyjx---  sjlycsysqyz-  -ckscsyjyjzq
+--kfscyyzgz-  lyfscyylyc--  szyscyy-xcg-  -sltcjklsry-
+sjl-tcjkyth-  tybtdsszc---  wqftybpjyjzy  xymwdlyfwhh-
+--szysxjyjzq  -tjyjzqg----  nythrwhhmk--  y-dythrwn---
+--qyblyc-h--  whh-cyyz----  -b-----h----  c-sqyb------
+--y--tm--h--  zmh---b-----  ------------  ----b-------
+```
+
+But there are also ugly ones:
+
+但也有丑的：
+
+```
+----------x-
+----------ks
+---------slt
+---------zx-
+----xymsjlyf
+wdlphrwhhycc
+--szcsydjcjk
+--rmscyythxj
+sqyhzgzjyjhh
+wyjzy---b---
+nbz---------
+--q---------
 ```
 
 Where `-` represents an unused block. Note when you expand a character into a `1 * 1` box rather than `1 * 2`, it will be approximately a square.
