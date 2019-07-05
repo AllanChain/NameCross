@@ -1,7 +1,7 @@
 # NameCross
-Make a cross maze to include everyone's name!
+Make a cross maze to include everyone's name! The connection made up a whole picture, you could not split it into two parts without spliting any name.
 
-把所有人的名字组合成一个交叉迷宫！
+把所有人的名字组合成一个交叉迷宫！并且整个迷宫是一个整体，你不能把迷宫分成两部分而不分裂任何一个名字。
 
 ## Perfect Example
 As far as I can see, the maze below is perfect:
@@ -23,9 +23,9 @@ whh-cyyz----
 zmh---b-----
 ```
 
-Where `-` represents an unused block.
+Where `-` represents an unused block. Note when you expand a character into a `1 * 1` box rather than `1 * 2`, it will be approximately a square.
 
-其中`-`代表一个未被使用的空格
+其中`-`代表一个未被使用的空格。注意当你让一个字母占据`1 * 1`的格子而不是`1 * 2`时，它会大约变成一个正方形。
 
 Other solutions can be found at `solutions/`
 
