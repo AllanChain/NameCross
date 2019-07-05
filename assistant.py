@@ -4,8 +4,8 @@
 import random
 from collections import namedtuple
 from copy import deepcopy
-from math import exp
 from hashlib import md5
+from math import exp
 
 
 def convert_name():
@@ -172,37 +172,35 @@ def get_max_ones(l, key):
                 max_value = value
             elif value == max_value:
                 max_ones.append(item)
+    print(max_value)
     return max_ones
 
 
 def main():
     def evaluate(new_map):
-        score = 100-a*new_map.border**2/new_map.chr_total+\
-                     b*new_map.used_chr # *exp(c*new_map.chr_total)
+        score = 100-a*new_map.border**2/new_map.chr_total +\
+            b*new_map.used_chr  # *exp(c*new_map.chr_total)
         for name, freq in name_freq.items():
             if freq > 0 and name not in new_map.rest_name:
-                score += freq*d
+                score += d*freq/freq_total
         # print(new_map.text_plain(), score)
         return score
     a, b, c, d = 2, 2, -0.02, 5
     name_freq = {''.join(name): 0 for name in convert_name()}
-    # for i in name_map.get_choices():
-    #     new_map = name_map.adopt(i)
-    #     print(new_map.text_plain(), new_map.border, new_map.chr_total)
+    freq_total = 0
     for _ in range(100):
         name_map = NameMap(seed='seed_one.txt')
-        # print(name_map.text_plain(nu=True))
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
-            # for m in new_maps:
-            #     print(m.text_plain())
             if not new_maps:
                 break
             name_map = random.choice(get_max_ones(new_maps, evaluate))
         for name in name_map.rest_name:
             name_freq[''.join(name)] += 1
+            freq_total += 1
         if not name_map.rest_name:
-            name_map.save_plain('solutions/'+md5(name_map.text_plain().encode()).hexdigest())
+            name_map.save_plain(
+                'solutions/'+md5(name_map.text_plain().encode()).hexdigest())
             print(name_map.text_plain())
             # print(name_freq)
 
