@@ -6,6 +6,7 @@ from collections import namedtuple
 from copy import deepcopy
 from hashlib import md5
 from math import exp
+import pickle
 
 
 def convert_name():
@@ -172,7 +173,6 @@ def get_max_ones(l, key):
                 max_value = value
             elif value == max_value:
                 max_ones.append(item)
-    print(max_value)
     return max_ones
 
 
@@ -186,8 +186,14 @@ def main():
         # print(new_map.text_plain(), score)
         return score
     a, b, c, d = 2, 2, -0.02, 5
-    name_freq = {''.join(name): 0 for name in convert_name()}
-    freq_total = 0
+    try:
+        with open('freq.pkl', 'rb') as f:
+            name_freq = pickle.load(f)
+        freq_total = sum(name_freq.values())
+    except FileNotFoundError:
+        name_freq = {''.join(name): 0 for name in convert_name()}
+        freq_total = 0
+    print(name_freq)
     for _ in range(100):
         name_map = NameMap(seed='seed_one.txt')
         while name_map.rest_name:
@@ -203,6 +209,8 @@ def main():
                 'solutions/'+md5(name_map.text_plain().encode()).hexdigest())
             print(name_map.text_plain())
             # print(name_freq)
+    with open('freq.pkl', 'wb') as f:
+        pickle.dump(name_freq, f)
 
 
 if __name__ == "__main__":
