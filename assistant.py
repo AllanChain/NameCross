@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import pickle
 import random
 from collections import namedtuple
-from copy import deepcopy
 from hashlib import md5
-from math import exp
-import pickle
+
+# from math import exp
+# from time import process_time
 
 
 def convert_name():
@@ -31,10 +32,13 @@ def match(pattern, name):
 
 
 class NameMap:
+    __slots__ = ['border', 'chr_total', 'rest_name',
+                 'used_chr', 'new_chrs', 'data', 'height', 'width']
+
     def __init__(self, seed):
         self.border = 0
         self.chr_total = 0
-        self.rest_name = convert_name()
+        self.rest_name = []
         self.used_chr = 0
         if isinstance(seed, str):
             with open(seed) as f:
@@ -73,8 +77,19 @@ class NameMap:
             data.append(['-'] * w)
         return NameMap(data)
 
+    def copy(self):
+        data = []
+        for i in range(self.height):
+            data.append(self[i, :])
+        new_map = NameMap(seed=data)
+        new_map.border = self.border
+        new_map.chr_total = self.chr_total
+        new_map.rest_name = self.rest_name.copy()
+        return new_map
+
     def adopt(self, choice):
-        new_map = deepcopy(self)
+        new_map = self.copy()
+        new_map.new_chrs = []
         if choice.direction == 'h':
             new_map[choice.y, choice.x:choice.x+len(choice.name)] =\
                 choice.name
@@ -90,6 +105,7 @@ class NameMap:
                     i, j = choice.y+index, choice.x
                 new_map.border += self.get_blanks(i, j) + \
                     new_map.get_blanks(i, j)-4
+                new_map.new_chrs.append((i, j))
             else:
                 new_map.used_chr += 1
         return new_map
@@ -186,16 +202,18 @@ def main():
         # print(new_map.text_plain(), score)
         return score
     a, b, c, d = 2, 2, -0.02, 5
+    name_pinyin = convert_name()
     try:
         with open('freq.pkl', 'rb') as f:
             name_freq = pickle.load(f)
         freq_total = sum(name_freq.values())
     except FileNotFoundError:
-        name_freq = {''.join(name): 0 for name in convert_name()}
+        name_freq = {''.join(name): 0 for name in name_pinyin}
         freq_total = 0
     print(name_freq)
     for _ in range(100):
         name_map = NameMap(seed='seed_one.txt')
+        name_map.rest_name = name_pinyin.copy()
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
             if not new_maps:
