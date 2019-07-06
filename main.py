@@ -39,8 +39,7 @@ class NameMap:
     def __init__(self, seed):
         if isinstance(seed, str):
             with open(seed) as f:
-                self.data = list(
-                    map(lambda line: list(line[:-1]), f.readlines()))
+                self.data = [list(line[:-1]) for line in f.readlines()]
         elif isinstance(seed, list):
             self.data = seed
         self.width = len(self.data[0])
@@ -158,8 +157,7 @@ class NameMap:
         for pos in iterator:
             i, j = pos
             name_chr = self[i, j]
-            available_names = list(filter(
-                lambda n: name_chr in n, self.rest_name))
+            available_names = [n for n in self.rest_name if name_chr in n]
             for name in available_names:
                 # ADD: name with some same letters
                 index = name.index(name_chr)
@@ -178,8 +176,8 @@ class NameMap:
                 return self.data[i][j] == '-'
             except IndexError:
                 return False
-        return list(map(is_blank, [(i-1, j), (i+1, j),
-                                   (i, j-1), (i, j+1)])).count(True)
+        return len([is_blank(i) for i in ((i-1, j), (i+1, j),
+                                   (i, j-1), (i, j+1))])
 
     def get_choices(self):
         choices = []
