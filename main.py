@@ -5,8 +5,8 @@ import pickle
 import random
 from collections import namedtuple
 from hashlib import md5
-from math import copysign
 from heapq import nlargest
+from math import copysign
 
 # from time import process_time
 
@@ -37,9 +37,6 @@ class NameMap:
                  'score', 'new_chrs', 'data', 'height', 'width']
 
     def __init__(self, seed):
-        self.border = 0
-        self.chr_total = 0
-        self.rest_name = []
         if isinstance(seed, str):
             with open(seed) as f:
                 self.data = list(
@@ -70,6 +67,19 @@ class NameMap:
         else:
             raise ValueError('Slice invalid')
 
+    def digest(self):
+        '''To digest input data and set some attributes'''
+        self.chr_total = 0
+        self.border = 0
+        self.new_chrs = []
+        self.rest_name = name_pinyin.copy()
+        for i in range(self.height):
+            for j in range(self.width):
+                if self[i, j] != '-':
+                    self.chr_total += 1
+                    self.border += self.get_blanks(i, j)
+                    self.new_chrs.append((i, j))
+
     @staticmethod
     def empty(w, h):
         data = []
@@ -90,6 +100,7 @@ class NameMap:
     def adopt(self, choice):
         new_map = self.copy()
         new_map.new_chrs = []
+        new_map.rest_name.remove(choice.name)
         used_chr = 0
         if choice.direction == 'h':
             new_map[choice.y, choice.x:choice.x+len(choice.name)] =\
@@ -137,29 +148,14 @@ class NameMap:
         with open(dest, 'w', encoding='utf-8', newline='\n') as f:
             f.write(self.text_plain())
 
-    def iter_chr(self):
-        self.border = 0
-        self.chr_total = 0
+    def iter_border(self):
         for i in range(self.height):
             for j in range(self.width):
-                if self[i, j] != '-':
-                    self.chr_total += 1
-                    border_count = self.get_blanks(i, j)
-                    self.border += border_count
-                    yield ((i, j), border_count)
+                if self[i, j] != '-' and self.get_blanks(i, j) > 0:
+                    yield i, j
 
-    def get_blanks(self, i, j):
-        def is_blank(pos):
-            i, j = pos
-            return (0 <= i < self.height and
-                    0 <= j < self.width and
-                    self.data[i][j] == '-')
-        return list(map(is_blank, [(i-1, j), (i+1, j),
-                                   (i, j-1), (i, j+1)])).count(True)
-
-    def get_choices(self):
-        choices = []
-        for pos, border_count in self.iter_chr():
+    def iter_name(self, iterator):
+        for pos in iterator:
             i, j = pos
             name_chr = self[i, j]
             available_names = list(filter(
@@ -173,22 +169,32 @@ class NameMap:
                     continue
                 pattern_h = self[i, j-index:j-index+len(name)]
                 pattern_v = self[i-index:i-index+len(name), j]
-                if name in (pattern_h, pattern_v):
-                    self.rest_name.remove(name)
-                    # This name will not involve further matching
-                    # as it is automatically in the map
-                    continue
-                # Only when it has blanks is there hope to match
-                if border_count != 0:
-                    if match(pattern_h, name):
-                        choices.append(
-                            Choice(name, i, j-index, 'h', pattern_h))
-                    elif match(pattern_v, name):
-                        choices.append(
-                            Choice(name, i-index, j, 'v', pattern_v))
-        # Check again if the name has been removed later on
-        choices = list(
-            filter(lambda choice: choice.name in self.rest_name, choices))
+                yield (i, j), index, name, (pattern_h, pattern_v)
+
+    def get_blanks(self, i, j):
+        def is_blank(pos):
+            i, j = pos
+            try:
+                return self.data[i][j] == '-'
+            except IndexError:
+                return False
+        return list(map(is_blank, [(i-1, j), (i+1, j),
+                                   (i, j-1), (i, j+1)])).count(True)
+
+    def get_choices(self):
+        choices = []
+        for _, __, name, pattern in self.iter_name(self.new_chrs):
+            if name in pattern:
+                self.rest_name.remove(name)
+        for pos, index, name, pattern in self.iter_name(self.iter_border()):
+            i, j = pos
+            pattern_h, pattern_v = pattern
+            if match(pattern_h, name):
+                choices.append(
+                    Choice(name, i, j-index, 'h', pattern_h))
+            elif match(pattern_v, name):
+                choices.append(
+                    Choice(name, i-index, j, 'v', pattern_v))
         return choices
 
 
@@ -208,15 +214,15 @@ def get_max_ones(l):
 
 def main():
     global freq_total
-    for _ in range(100):
+    for _ in range(10):
         name_map = NameMap(seed='seed_one.txt')
-        name_map.rest_name = name_pinyin.copy()
+        name_map.digest()
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
             if not new_maps:
                 break
-            name_map = random.choice(nlargest(5, new_maps, key=lambda m: m.score))
-            # input()
+            name_map = random.choice(
+                nlargest(5, new_maps, key=lambda m: m.score))
         for name in name_map.rest_name:
             name_freq[''.join(name)] += 1
             freq_total += 1
