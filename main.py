@@ -47,14 +47,10 @@ class NameMap:
 
     def __getitem__(self, args):
         rows, columns = args
-        if isinstance(rows, int) and isinstance(columns, (slice, int)):
-            return self.data[rows][columns]
         if isinstance(columns, int) and isinstance(rows, slice):
-            item = []
-            for i in range(rows.start, rows.stop):
-                item.append(self.data[i][columns])
-            return item
-        raise ValueError('Slice invalid')
+            return [self.data[i][columns] for i in range(rows.start, rows.stop)]
+        # Omit checks to be faster
+        return self.data[rows][columns]
 
     def __setitem__(self, args, name):
         rows, columns = args
@@ -154,9 +150,8 @@ class NameMap:
                     yield i, j
 
     def iter_name(self, iterator):
-        for pos in iterator:
-            i, j = pos
-            name_chr = self[i, j]
+        for i, j in iterator:
+            name_chr = self.data[i][j]
             available_names = [n for n in self.rest_name if name_chr in n]
             for name in available_names:
                 # ADD: name with some same letters
