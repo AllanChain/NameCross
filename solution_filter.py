@@ -16,7 +16,9 @@ def process(solution):
         else:
             for i in range(len(data)):
                 del data[i][j]
-    if len(data) < 11 and len(data[0]) < 11:
+    if len(data) <= 6 or len(data[0]) <= 6:
+        print(''.join(solution))
+    if 6 < len(data) < 11 and 6 < len(data[0]) < 11:
         text = ''.join([''.join(row)+'\n' for row in data])
         with open('better\\'+md5(text.encode()).hexdigest(), 'w', encoding='utf-8', newline='\n') as f:
             f.write(text)
@@ -26,6 +28,7 @@ def process(solution):
 def main():
     for i in listdir('solutions'):
         with open(f'solutions\\{i}', encoding='utf-8') as f:
+            print(i)
             process(f.readlines())
 
 
