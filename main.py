@@ -36,12 +36,25 @@ class NameMap:
     __slots__ = ['border', 'chr_total', 'rest_name',
                  'score', 'new_chrs', 'data', 'height', 'width']
 
-    def __init__(self, seed):
+    def __init__(self, seed, names=None):
+        self.new_chrs = []
+        if isinstance(seed, NameMap):
+            self.data = [seed[i, :] for i in range(seed.height)]
+            self.border = seed.border
+            self.chr_total = seed.chr_total
+            self.rest_name = seed.rest_name.copy()
         if isinstance(seed, str):
             with open(seed) as f:
                 self.data = [list(line[:-1]) for line in f.readlines()]
-        elif isinstance(seed, list):
-            self.data = seed
+            self.chr_total = 0
+            self.border = 0
+            self.rest_name = names
+            for i in range(len(self.data)):
+                for j in range(len(self.data[0])):
+                    if self[i, j] != '-':
+                        self.chr_total += 1
+                        self.border += self.get_blanks(i, j)
+                        self.new_chrs.append((i, j))
         self.width = len(self.data[0])
         self.height = len(self.data)
 
@@ -62,19 +75,6 @@ class NameMap:
         else:
             raise ValueError('Slice invalid')
 
-    def digest(self):
-        '''To digest input data and set some attributes'''
-        self.chr_total = 0
-        self.border = 0
-        self.new_chrs = []
-        self.rest_name = name_pinyin.copy()
-        for i in range(self.height):
-            for j in range(self.width):
-                if self[i, j] != '-':
-                    self.chr_total += 1
-                    self.border += self.get_blanks(i, j)
-                    self.new_chrs.append((i, j))
-
     @staticmethod
     def empty(w, h):
         data = []
@@ -82,19 +82,8 @@ class NameMap:
             data.append(['-'] * w)
         return NameMap(data)
 
-    def copy(self):
-        data = []
-        for i in range(self.height):
-            data.append(self[i, :])
-        new_map = NameMap(seed=data)
-        new_map.border = self.border
-        new_map.chr_total = self.chr_total
-        new_map.rest_name = self.rest_name.copy()
-        return new_map
-
     def adopt(self, choice):
-        new_map = self.copy()
-        new_map.new_chrs = []
+        new_map = NameMap(seed=self)
         new_map.rest_name.remove(choice.name)
         used_chr = 0
         if choice.direction == 'h':
@@ -194,8 +183,7 @@ class NameMap:
 def main():
     global freq_total
     for _ in range(10):
-        name_map = NameMap(seed='seed_one.txt')
-        name_map.digest()
+        name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
             if not new_maps:
