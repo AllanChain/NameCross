@@ -198,20 +198,6 @@ class NameMap:
         return choices
 
 
-def get_max_ones(l):
-    max_ones = [l[0]]
-    max_value = l[0].score
-    if len(l) > 1:
-        for item in l[1:]:
-            value = item.score
-            if value > max_value:
-                max_ones = [item]
-                max_value = value
-            elif value == max_value:
-                max_ones.append(item)
-    return max_ones
-
-
 def main():
     global freq_total
     for _ in range(10):
