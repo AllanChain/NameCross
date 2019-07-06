@@ -5,8 +5,9 @@ import pickle
 import random
 from collections import namedtuple
 from hashlib import md5
+from math import copysign
+from heapq import nlargest
 
-# from math import exp
 # from time import process_time
 
 
@@ -33,13 +34,12 @@ def match(pattern, name):
 
 class NameMap:
     __slots__ = ['border', 'chr_total', 'rest_name',
-                 'used_chr', 'new_chrs', 'data', 'height', 'width']
+                 'score', 'new_chrs', 'data', 'height', 'width']
 
     def __init__(self, seed):
         self.border = 0
         self.chr_total = 0
         self.rest_name = []
-        self.used_chr = 0
         if isinstance(seed, str):
             with open(seed) as f:
                 self.data = list(
@@ -90,6 +90,7 @@ class NameMap:
     def adopt(self, choice):
         new_map = self.copy()
         new_map.new_chrs = []
+        used_chr = 0
         if choice.direction == 'h':
             new_map[choice.y, choice.x:choice.x+len(choice.name)] =\
                 choice.name
@@ -107,8 +108,21 @@ class NameMap:
                     new_map.get_blanks(i, j)-4
                 new_map.new_chrs.append((i, j))
             else:
-                new_map.used_chr += 1
+                used_chr += 1
+        new_map.evaluate(used_chr, choice.name)
         return new_map
+
+    def evaluate(self, used_chr, name):
+        # print(self.text_plain())
+        score = a*self.border**2/self.chr_total
+        score = copysign(score, 30-self.chr_total)
+        # print(score, end=' ')
+        score += b*used_chr  # *exp(c*self.chr_total)
+        # print(score, end=' ')
+        score += d*name_freq[''.join(name)]/freq_total
+        # print(score)
+        # print(self.text_plain(), score)
+        self.score = score
 
     def text_plain(self, nu=False):
         text = ''
@@ -178,12 +192,12 @@ class NameMap:
         return choices
 
 
-def get_max_ones(l, key):
+def get_max_ones(l):
     max_ones = [l[0]]
-    max_value = key(l[0])
+    max_value = l[0].score
     if len(l) > 1:
         for item in l[1:]:
-            value = key(item)
+            value = item.score
             if value > max_value:
                 max_ones = [item]
                 max_value = value
@@ -193,15 +207,28 @@ def get_max_ones(l, key):
 
 
 def main():
-    def evaluate(new_map):
-        score = 100-a*new_map.border**2/new_map.chr_total +\
-            b*new_map.used_chr  # *exp(c*new_map.chr_total)
-        for name, freq in name_freq.items():
-            if freq > 0 and name not in new_map.rest_name:
-                score += d*freq/freq_total
-        # print(new_map.text_plain(), score)
-        return score
-    a, b, c, d = 2, 2, -0.02, 5
+    global freq_total
+    for _ in range(100):
+        name_map = NameMap(seed='seed_one.txt')
+        name_map.rest_name = name_pinyin.copy()
+        while name_map.rest_name:
+            new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
+            if not new_maps:
+                break
+            name_map = random.choice(nlargest(5, new_maps, key=lambda m: m.score))
+            # input()
+        for name in name_map.rest_name:
+            name_freq[''.join(name)] += 1
+            freq_total += 1
+        if not name_map.rest_name:
+            name_map.save_plain(
+                'solutions/'+md5(name_map.text_plain().encode()).hexdigest())
+            print(name_map.text_plain())
+        # print(name_freq)
+
+
+if __name__ == "__main__":
+    a, b, c, d = 0.6, 20, -0.02, 50
     name_pinyin = convert_name()
     try:
         with open('freq.pkl', 'rb') as f:
@@ -211,25 +238,6 @@ def main():
         name_freq = {''.join(name): 0 for name in name_pinyin}
         freq_total = 0
     print(name_freq)
-    for _ in range(100):
-        name_map = NameMap(seed='seed_one.txt')
-        name_map.rest_name = name_pinyin.copy()
-        while name_map.rest_name:
-            new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
-            if not new_maps:
-                break
-            name_map = random.choice(get_max_ones(new_maps, evaluate))
-        for name in name_map.rest_name:
-            name_freq[''.join(name)] += 1
-            freq_total += 1
-        if not name_map.rest_name:
-            name_map.save_plain(
-                'solutions/'+md5(name_map.text_plain().encode()).hexdigest())
-            print(name_map.text_plain())
-            # print(name_freq)
+    main()
     with open('freq.pkl', 'wb') as f:
         pickle.dump(name_freq, f)
-
-
-if __name__ == "__main__":
-    main()
