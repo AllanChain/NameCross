@@ -119,7 +119,10 @@ class NameMap:
         # print(score, end=' ')
         score += b*used_chr  # *exp(c*self.chr_total)
         # print(score, end=' ')
-        score += d*name_freq[''.join(name)]/freq_total
+        try:
+            score += d*name_freq[''.join(name)]/freq_total
+        except ZeroDivisionError:
+            pass
         # print(score)
         # print(self.text_plain(), score)
         self.score = score
