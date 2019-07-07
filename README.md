@@ -60,9 +60,9 @@ Other solutions can be found at `solutions/`
 
 ## How It Works
 
-It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. On average (estimated), 4 answers are found per hundred attempt, and 7 is the best score. It takes 8s to complete 100 attempts.
+It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. In general, 10 answers are found per thousand attempt. It takes 47s to complete 1000 attempts.
 
-它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。平均下来，目测每100次尝试会有4个解，最好的一次有7个。~~而且，跑起来很费时间~~100次现在要花8秒钟。
+它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。测试中，1000次尝试会有10个解，要花47秒钟。
 
 # ToDo
 
