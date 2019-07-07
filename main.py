@@ -160,8 +160,8 @@ class NameMap:
                 return self.data[i][j] == '-'
             except IndexError:
                 return False
-        return len([is_blank(i) for i in ((i-1, j), (i+1, j),
-                                   (i, j-1), (i, j+1))])
+        return len([p for p in ((i-1, j), (i+1, j),
+                                (i, j-1), (i, j+1)) if is_blank(p)])
 
     def get_choices(self):
         choices = []
