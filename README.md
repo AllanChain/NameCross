@@ -9,18 +9,15 @@ As far as I can see, the mazes below is perfect (No.2 and 3 is pruned by me):
 我觉得下面这几个迷宫是完美的（图2和图3是我修过的）：
 
 ```
-------------  ------------  ------------  ------------
-------------  ------------  ------------  ------------
-------------  ------------  ------------  ------------
-------------  ----wdlsry--  --xklsry----  ----zgzss---
-lsry----pszl  --xjxym-----  --sltzmh----  -d--mpszc---
--wdlhrwhhzmh  cjkphrwswn--  jxzdjcwdlx--  -jxjhhzlycj-
--nxycsydjcw-  szlscsyjx---  sjlycsysqyz-  -ckscsyjyjzq
---kfscyyzgz-  lyfscyylyc--  szyscyy-xcg-  -sltcjklsry-
-sjl-tcjkyth-  tybtdsszc---  wqftybpjyjzy  xymwdlyfwhh-
---szysxjyjzq  -tjyjzqg----  nythrwhhmk--  y-dythrwn---
---qyblyc-h--  whh-cyyz----  -b-----h----  c-sqyb------
---y--tm--h--  zmh---b-----  ------------  ----b-------
+---wdlsry  ----zgzss---  --slt-sswnp  --xklsry----  lsry----pszl
+--xjxym---  -d--mpszc---  -szcxjzqyth  --sltzmh----  -wdlhrwhhzmh
+cjkphrwswn  -jxjhhzlycj-  -dyjsjlycc-  jxzdjcwdlx--  -nxycsydjcw-
+szlscsyjx-  -ckscsyjyjzq  -jxycsyby--  sjlycsysqyz-  --kfscyyzgz-
+lyfscyylyc  -sltcjklsry-  scyjzyftyb-  szyscyy-xcg-  sjl-tcjkyth-
+tybtdsszc-  xymwdlyfwhh-  tjmhgmwdl--  wqftybpjyjzy  --szysxjyjzq
+-tjyjzqg--  y-dythrwn---  xklhzmh----  nythrwhhmk--  --qyblyc-h--
+whh-cyyz--  c-sqyb------  -lsry-h----  -b-----h----  --y--tm--h--
+zmh---b---  ----b-------  ---w-------
 ```
 
 But there are also ugly ones:
@@ -56,9 +53,9 @@ Other solutions can be found at `solutions/`
 
 ## How It Works
 
-It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. On average (estimated), 4 answers are found per hundred attempt, and 7 is the best score. It takes 6s to complete 100 attempts.
+It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. On average (estimated), 4 answers are found per hundred attempt, and 7 is the best score. It takes 8s to complete 100 attempts.
 
-它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。平均下来，目测每100次尝试会有4个解，最好的一次有7个。~~而且，跑起来很费时间~~100次现在要花6秒钟。
+它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。平均下来，目测每100次尝试会有4个解，最好的一次有7个。~~而且，跑起来很费时间~~100次现在要花8秒钟。
 
 # ToDo
 
