@@ -43,20 +43,25 @@ class NameMap:
             self.border = seed.border
             self.chr_total = seed.chr_total
             self.rest_name = seed.rest_name.copy()
+            self.width = seed.width
+            self.height = seed.height
+            return
         if isinstance(seed, str):
             with open(seed) as f:
                 self.data = [list(line[:-1]) for line in f.readlines()]
-            self.chr_total = 0
-            self.border = 0
-            self.rest_name = names
-            for i in range(len(self.data)):
-                for j in range(len(self.data[0])):
-                    if self[i, j] != '-':
-                        self.chr_total += 1
-                        self.border += self.get_blanks(i, j)
-                        self.new_chrs.append((i, j))
+        elif isinstance(seed, list):
+            self.data = seed
         self.width = len(self.data[0])
         self.height = len(self.data)
+        self.chr_total = 0
+        self.border = 0
+        self.rest_name = names
+        for i in range(self.height):
+            for j in range(self.width):
+                if self[i, j] != '-':
+                    self.chr_total += 1
+                    self.border += self.get_blanks(i, j)
+                    self.new_chrs.append((i, j))
 
     def __getitem__(self, args):
         rows, columns = args
@@ -182,7 +187,7 @@ class NameMap:
 
 def main():
     global freq_total
-    for _ in range(10):
+    for _ in range(1000):
         name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
