@@ -5,6 +5,8 @@ Make a cross maze to include everyone's name! The connection made up a whole pic
 
 ## Perfect Example
 
+![Demo](https://github.com/AllanChain/NameCross/raw/master/demo.gif)
+
 **The demos are outdated after a catastrophy (see commit 875352a)**
 
 **下面的示例内容在大灾难后已经过时（见875352a）**
