@@ -4,6 +4,11 @@ Make a cross maze to include everyone's name! The connection made up a whole pic
 把所有人的名字组合成一个交叉迷宫！并且整个迷宫是一个整体，你不能把迷宫分成两部分而不分裂任何一个名字。
 
 ## Perfect Example
+
+**The demos are outdated after a catastrophy (see commit 875352a)**
+
+**下面的示例内容在大灾难后已经过时（见875352a）**
+
 As far as I can see, the mazes below is perfect (No.2 and 3 is pruned by me):
 
 我觉得下面这几个迷宫是完美的（图2和图3是我修过的）：
@@ -62,4 +67,4 @@ It has **nothing to do with AI**, because it is just hard-coded evaluation with 
 - [ ] Add overall evaluation to get best output in all solutions
 - [ ] Different name to be the seed
 - [ ] Better algorithm (maybe real ML)
-- [ ] Gif animation or HTML&JS interaction
+- [X] Gif animation or HTML&JS interaction
