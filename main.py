@@ -36,11 +36,13 @@ def match(pattern, name):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', default=100, help='Number of attempts')
+    parser.add_argument('--use-colorama', '-c', action='store_true',
+                        default=False, help='Whether use colorama')
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--seed', '-s', default=None, help='The seed to apply')
-    group.add_argument('--random', '-r', default='12x12',
-                       help='Specify the random mode and its size, e.g. 12x12')
+    group.add_argument('--random', '-r', default='12x12', metavar='WxH',
+                       help='Use random mode and specify its size, e.g. 12x12')
     return parser.parse_args()
 
 
@@ -246,8 +248,11 @@ class NameMap:
 def main(args):
     global freq_total
     size = [int(s) for s in args.random.split('x')[:2]]
+    if args.use_colorama:
+        import colorama
+        colorama.init()
     for i in range(int(args.n)):
-        print(f'Attempt {i: 4}. ', end='')
+        print(f'Attempt {i+1: 4}. ', end='')
         if args.seed is not None:
             name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
         else:
@@ -272,8 +277,9 @@ def main(args):
                 name_map.save_plain(
                     'better/'+md5(name_map.text_plain().encode()).hexdigest())
             else:
+                print('\033[32m')
                 print(name_map.text_plain())
-        # print(name_freq)
+                print('\033[0m')
 
 
 if __name__ == "__main__":
