@@ -118,12 +118,10 @@ class NameMap:
         names.remove(name)
         length = len(name)
         if random.random() < 0.5:
-            i = random.randint(0, h-length)
-            j = random.randint(0, w-1)
+            i, j = (h-length)//2, w//2
             new_map[i:i+length, j] = name
         else:
-            i = random.randint(0, h-1)
-            j = random.randint(0, w-length)
+            i, j = h//2, (w-length)//2
             new_map[i, j:j+length] = name
         new_map.chr_total = length
         new_map.border = 2+2*length
@@ -252,7 +250,8 @@ class NameMap:
 
 def main(args):
     global freq_total
-    size = [int(s) for s in args.random.split('x')[:2]]
+    wanted_size = [int(s) for s in args.random.split('x')[:2]]
+    try_size = [int(s*1.2) for s in wanted_size]
     if args.use_colorama:
         import colorama
         colorama.init()
@@ -261,7 +260,7 @@ def main(args):
         if args.seed is not None:
             name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
         else:
-            name_map = NameMap.random(size, name_pinyin.copy())
+            name_map = NameMap.random(try_size, name_pinyin.copy())
         print('\r', end='')
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
@@ -275,12 +274,13 @@ def main(args):
         if not name_map.rest_name:
             name_map.prune()
             print()
-            if name_map.width*name_map.height <= 100:
+            if name_map.width <= wanted_size[0] and\
+                    name_map.height <= wanted_size[1]:
                 print('\033[33m'+'#'*20)
                 print(name_map.text_plain(), name_map.height, name_map.width)
                 print('#'*20+'\033[0m')
                 name_map.save_plain(path.join(
-                    args.dest, md5(name_map.text_plain().encode()).hexdigest()))
+                    args.output, md5(name_map.text_plain().encode()).hexdigest()))
             else:
                 print('\033[32m')
                 print(name_map.text_plain())
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     a, b, c, d = 0.6, 20, -0.02, 50
     args = get_args()
     name_pinyin = convert_name(args.data)
-    makedirs(args.dest, exist_ok=True)
+    makedirs(args.output, exist_ok=True)
     pkl_file = path.splitext(args.data)[0]+'.pkl'
     try:
         with open(pkl_file, 'rb') as f:
