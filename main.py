@@ -258,7 +258,7 @@ def main(args):
     for i in range(args.n):
         print(f'Attempt {i+1: 4}. ', end='')
         if args.seed is not None:
-            name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
+            name_map = NameMap(seed=args.seed, names=name_pinyin.copy())
         else:
             name_map = NameMap.random(try_size, name_pinyin.copy())
         print('\r', end='')
