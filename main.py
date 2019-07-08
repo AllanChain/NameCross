@@ -108,6 +108,7 @@ class NameMap:
         new_map = NameMap.empty(size, names)
         name = random.choice(names)
         print(f'Chose {"".join(name):4} as random seed.', end='')
+        names.remove(name)
         length = len(name)
         if random.random() < 0.5:
             i = random.randint(0, h-length)
