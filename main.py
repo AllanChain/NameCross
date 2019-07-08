@@ -51,6 +51,8 @@ class NameMap:
                 self.data = [list(line[:-1]) for line in f.readlines()]
         elif isinstance(seed, list):
             self.data = seed
+        else:
+            raise ValueError('seed must be instance of NameMap, str or list')
         self.width = len(self.data[0])
         self.height = len(self.data)
         self.chr_total = 0
@@ -81,11 +83,31 @@ class NameMap:
             raise ValueError('Slice invalid')
 
     @staticmethod
-    def empty(w, h):
+    def empty(size, names):
+        w, h = size
         data = []
         for _ in range(h):
             data.append(['-'] * w)
-        return NameMap(data)
+        return NameMap(data, names)
+
+    @staticmethod
+    def random(size, names):
+        w, h = size
+        new_map = NameMap.empty(size, names)
+        name = random.choice(names)
+        print(f'Chose {"".join(name)} as random seed')
+        length = len(name)
+        if random.random() < 0.5:
+            i = random.randint(0, h-length)
+            j = random.randint(0, w-1)
+            new_map[i:i+length, j] = name
+        else:
+            i = random.randint(0, h-1)
+            j = random.randint(0, w-length)
+            new_map[i, j:j+length] = name
+        new_map.chr_total = length
+        new_map.border = 2+2*length
+        return new_map
 
     def adopt(self, choice):
         new_map = NameMap(seed=self)
@@ -190,8 +212,9 @@ class NameMap:
 
 def main():
     global freq_total
-    for _ in range(1000):
-        name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
+    for _ in range(10):
+        # name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
+        name_map = NameMap.random((12, 12), name_pinyin.copy())
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
             if not new_maps:
