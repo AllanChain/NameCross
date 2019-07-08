@@ -8,7 +8,7 @@ from collections import namedtuple
 from hashlib import md5
 from heapq import nlargest
 from math import copysign
-from os import mkdir, path
+from os import makedirs, path
 
 # from time import process_time
 
@@ -289,9 +289,10 @@ if __name__ == "__main__":
     a, b, c, d = 0.6, 20, -0.02, 50
     args = get_args()
     name_pinyin = convert_name(args.data)
-    mkdir(args.dest)
+    makedirs(args.dest, exist_ok=True)
+    pkl_file = path.splitext(args.data)[0]+'.pkl'
     try:
-        with open('freq.pkl', 'rb') as f:
+        with open(pkl_file, 'rb') as f:
             name_freq = pickle.load(f)
         freq_total = sum(name_freq.values())
     except FileNotFoundError:
@@ -299,5 +300,5 @@ if __name__ == "__main__":
         freq_total = 0
     print(name_freq)
     main(args)
-    with open('freq.pkl', 'wb') as f:
+    with open(pkl_file, 'wb') as f:
         pickle.dump(name_freq, f)
