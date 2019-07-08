@@ -61,21 +61,38 @@ Other solutions can be found at `solutions/`
 ## Usage
 
 ```
-usage: main.py [-h] [-n N] [--use-colorama] [--seed SEED | --random WxH]
+usage: main.py [-h] --data DATA --output OUTPUT [-n N] [--use-colorama]
+               [--seed SEED | --random WxH]
 
 optional arguments:
   -h, --help            show this help message and exit
+  --data DATA, -d DATA  The name data file
+  --output OUTPUT, -o OUTPUT
+                        Directory to store output
   -n N                  Number of attempts
   --use-colorama, -c    Whether use colorama
   --seed SEED, -s SEED  The seed to apply
   --random WxH, -r WxH  Use random mode and specify its size, e.g. 12x12
 ```
 
+```shell
+# To run the example data set
+python3 main.py --data data/TG2019303.txt --o better
+
+# If you are using Windows cmd and has colorama installed, add a -c option
+python3 main.py --data data/TG2019303.txt --o better -c
+
+# To run 1000 attempts
+python3 main.py --data data/TG2019303.txt --o better -n 1000
+
+# To give it a seed file
+python3 main.py --data data/TG2019303.txt --o better -s data/seed_one.txt
+```
 ## How It Works
 
-It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. In general, 10 answers are found per thousand attempt. It takes 47s to complete 1000 attempts.
+It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. In general, 10 answers are found per thousand attempt. It takes 47s to complete 1000 attempts on my laptop.
 
-它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。测试中，1000次尝试会有10个解，要花47秒钟。
+它**和AI没有半毛钱关系** ， 因为它不过是预先写好的评估算法（加上对失败尝试时未被使用的名字的高权重）和随机选择。在我的笔记本上，1000次尝试会有10个解，要花47秒钟。
 
 # ToDo
 
