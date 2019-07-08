@@ -58,6 +58,19 @@ Other solutions can be found at `solutions/`
 
 你能在`solution/`文件夹中找到更多解
 
+## Usage
+
+```
+usage: main.py [-h] [-n N] [--use-colorama] [--seed SEED | --random WxH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n N                  Number of attempts
+  --use-colorama, -c    Whether use colorama
+  --seed SEED, -s SEED  The seed to apply
+  --random WxH, -r WxH  Use random mode and specify its size, e.g. 12x12
+```
+
 ## How It Works
 
 It has **nothing to do with AI**, because it is just hard-coded evaluation with high weight of the often no used names, and a kiand of random choice. In general, 10 answers are found per thousand attempt. It takes 47s to complete 1000 attempts.
@@ -66,7 +79,7 @@ It has **nothing to do with AI**, because it is just hard-coded evaluation with 
 
 # ToDo
 
-- [ ] Add overall evaluation to get best output in all solutions
-- [ ] Different name to be the seed
+- [X] Add overall evaluation to get best output in all solutions
+- [X] Different name to be the seed
 - [ ] Better algorithm (maybe real ML)
 - [X] Gif animation or HTML&JS interaction
