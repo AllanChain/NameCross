@@ -282,7 +282,8 @@ def main(args):
                 name_map.save_plain(path.join(
                     args.output, md5(name_map.text_plain().encode()).hexdigest()))
             else:
-                print('\033[32m')
+                print('\033[32mFound one, but unfortunately,\n'
+                      '  not as you required:')
                 print(name_map.text_plain())
                 print('\033[0m')
 
