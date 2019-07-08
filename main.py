@@ -8,14 +8,15 @@ from collections import namedtuple
 from hashlib import md5
 from heapq import nlargest
 from math import copysign
+from os import mkdir, path
 
 # from time import process_time
 
 
-def convert_name():
+def convert_name(data_file):
     import pinyin
 
-    with open('name_data.txt', encoding='utf-8') as f:
+    with open(data_file, encoding='utf-8') as f:
         names = f.readlines()
         return list(
             map(lambda name: pinyin.get_initial(name[:-1]).split(' '), names))
@@ -35,7 +36,9 @@ def match(pattern, name):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', default=100, help='Number of attempts')
+    parser.add_argument('--data', required=True)
+    parser.add_argument('--dest', required=True)
+    parser.add_argument('-n', type=int, default=100, help='Number of attempts')
     parser.add_argument('--use-colorama', '-c', action='store_true',
                         default=False, help='Whether use colorama')
     group = parser.add_mutually_exclusive_group(required=False)
@@ -251,7 +254,7 @@ def main(args):
     if args.use_colorama:
         import colorama
         colorama.init()
-    for i in range(int(args.n)):
+    for i in range(args.n):
         print(f'Attempt {i+1: 4}. ', end='')
         if args.seed is not None:
             name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
@@ -274,8 +277,8 @@ def main(args):
                 print('\033[33m'+'#'*20)
                 print(name_map.text_plain(), name_map.height, name_map.width)
                 print('#'*20+'\033[0m')
-                name_map.save_plain(
-                    'better/'+md5(name_map.text_plain().encode()).hexdigest())
+                name_map.save_plain(path.join(
+                    args.dest, md5(name_map.text_plain().encode()).hexdigest()))
             else:
                 print('\033[32m')
                 print(name_map.text_plain())
@@ -284,7 +287,9 @@ def main(args):
 
 if __name__ == "__main__":
     a, b, c, d = 0.6, 20, -0.02, 50
-    name_pinyin = convert_name()
+    args = get_args()
+    name_pinyin = convert_name(args.data)
+    mkdir(args.dest)
     try:
         with open('freq.pkl', 'rb') as f:
             name_freq = pickle.load(f)
@@ -293,6 +298,6 @@ if __name__ == "__main__":
         name_freq = {''.join(name): 0 for name in name_pinyin}
         freq_total = 0
     print(name_freq)
-    main(get_args())
+    main(args)
     with open('freq.pkl', 'wb') as f:
         pickle.dump(name_freq, f)
