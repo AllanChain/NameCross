@@ -36,8 +36,10 @@ def match(pattern, name):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', required=True)
-    parser.add_argument('--dest', required=True)
+    parser.add_argument('--data', '-d', required=True,
+                        help='The name data file')
+    parser.add_argument('--output', '-o', required=True,
+                        help='Directory to store output')
     parser.add_argument('-n', type=int, default=100, help='Number of attempts')
     parser.add_argument('--use-colorama', '-c', action='store_true',
                         default=False, help='Whether use colorama')
