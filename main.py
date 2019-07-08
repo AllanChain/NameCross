@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import pickle
 import random
 from collections import namedtuple
@@ -36,6 +37,17 @@ def match(pattern, name):
         if not p in ('-', n):
             return False
     return True
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', default=100, help='Number of attempts')
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--seed', '-s', default=None, help='The seed to apply')
+    group.add_argument('--random', '-r', default='12x12',
+                       help='Specify the random mode and its size, e.g. 12x12')
+    return parser.parse_args()
 
 
 class NameMap:
@@ -236,12 +248,15 @@ class NameMap:
                     self.border += self.get_blanks(i, j)
 
 
-def main():
+def main(args):
     global freq_total
     for i in range(100):
         print(f'Attempt {i: 4}')
-        # name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
-        name_map = NameMap.random((12, 12), name_pinyin.copy())
+        if args.seed is not None:
+            name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
+        else:
+            size = [int(s) for s in args.random.split('x')[:2]]
+            name_map = NameMap.random(size, name_pinyin.copy())
         while name_map.rest_name:
             new_maps = [name_map.adopt(m) for m in name_map.get_choices()]
             if not new_maps:
@@ -274,6 +289,6 @@ if __name__ == "__main__":
         name_freq = {''.join(name): 0 for name in name_pinyin}
         freq_total = 0
     print(name_freq)
-    main()
+    main(get_args())
     with open('freq.pkl', 'wb') as f:
         pickle.dump(name_freq, f)
