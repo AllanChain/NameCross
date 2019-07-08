@@ -1,5 +1,7 @@
 from hashlib import md5
-with open('D:\\Desktop\\hh.txt') as f:
+from sys import argv
+
+with open(argv[1]) as f:
     maps = f.read().split('\n\n')
     print(maps)
 
