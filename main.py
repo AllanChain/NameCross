@@ -8,6 +8,12 @@ from hashlib import md5
 from heapq import nlargest
 from math import copysign
 
+try:
+    import colorama
+    colorama.init()
+except ImportError:
+    pass
+
 # from time import process_time
 
 
@@ -95,7 +101,7 @@ class NameMap:
         w, h = size
         new_map = NameMap.empty(size, names)
         name = random.choice(names)
-        print(f'Chose {"".join(name)} as random seed')
+        print(f'    Chose {"".join(name)} as random seed')
         length = len(name)
         if random.random() < 0.5:
             i = random.randint(0, h-length)
@@ -209,10 +215,31 @@ class NameMap:
                     Choice(name, i-index, j, 'v', pattern_v))
         return choices
 
+    def prune(self):
+        for i in range(self.height-1, -1, -1):
+            if set(self.data[i]) == {'-'}:
+                del self.data[i]
+        self.height = len(self.data)
+        for j in range(self.width-1, -1, -1):
+            for i in range(self.height):
+                if self.data[i][j] != '-':
+                    break
+            else:
+                for i in range(self.height):
+                    del self.data[i][j]
+        self.width = len(self.data[0])
+        # Calc border again
+        self.border = 0
+        for i in range(self.height):
+            for j in range(self.width):
+                if self[i, j] != '-':
+                    self.border += self.get_blanks(i, j)
+
 
 def main():
     global freq_total
-    for _ in range(10):
+    for i in range(100):
+        print(f'Attempt {i: 4}')
         # name_map = NameMap(seed='seed_one.txt', names=name_pinyin.copy())
         name_map = NameMap.random((12, 12), name_pinyin.copy())
         while name_map.rest_name:
@@ -225,9 +252,14 @@ def main():
             name_freq[''.join(name)] += 1
             freq_total += 1
         if not name_map.rest_name:
-            name_map.save_plain(
-                'solutions/'+md5(name_map.text_plain().encode()).hexdigest())
-            print(name_map.text_plain())
+            name_map.prune()
+            if name_map.width*name_map.height <= 100:
+                print('\033[33m'+name_map.text_plain() +
+                      '\033[0m', name_map.height, name_map.width)
+                name_map.save_plain(
+                    'better/'+md5(name_map.text_plain().encode()).hexdigest())
+            else:
+                print(name_map.text_plain())
         # print(name_freq)
 
 
