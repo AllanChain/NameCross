@@ -60,7 +60,7 @@ Other solutions can be found at `solutions/`
 
 ## Usage
 
-```
+```shell
 usage: main.py [-h] --data DATA --output OUTPUT [-n N] [--use-colorama]
                [--seed SEED | --random WxH]
 
@@ -73,10 +73,8 @@ optional arguments:
   --use-colorama, -c    Whether use colorama
   --seed SEED, -s SEED  The seed to apply
   --random WxH, -r WxH  Use random mode and specify its size, e.g. 12x12
-```
 
-```shell
-# To run the example data set
+# To run the example data set for 100 attempts and output to directory better/
 python3 main.py --data data/TG2019303.txt --o better
 
 # If you are using Windows cmd and has colorama installed, add a -c option
@@ -87,6 +85,29 @@ python3 main.py --data data/TG2019303.txt --o better -n 1000
 
 # To give it a seed file
 python3 main.py --data data/TG2019303.txt --o better -s data/seed_one.txt
+
+# To use random mode
+python3 main.py --data data/TG2019303.txt --o better -r 11x11
+```
+
+```shell
+usage: gif_maker.py [-h] --data DATA --input INPUT [--text TEXT] --output
+                    OUTPUT
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data DATA, -d DATA  Name data file
+  --input INPUT, -i INPUT
+                        Input name map file
+  --text TEXT, -t TEXT  Text to draw
+  --output OUTPUT, -o OUTPUT
+                        Output directory
+                        
+# To get the demo gif
+gif_maker.py -d data/TG2019303.txt -i better/f465c4059c8ab543af0b0b842723ad13 -o demo.gif
+
+# Or if you belong to another class
+gif_maker.py -d data/TG2019319.txt -i better/ffffffffffffffffffffffffffffffff -t 319 -o demo.gif
 ```
 ## How It Works
 
