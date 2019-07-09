@@ -1,5 +1,5 @@
+import argparse
 from random import shuffle
-from os import listdir
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -15,21 +15,10 @@ FONT_BIG = ImageFont.truetype(
     "C:\\Windows\\Fonts\\constanb.ttf", size=380)
 
 
-def process(filename):
-    name_pinyin = convert_name()
-    name_map = NameMap(
-        seed='better\\'+filename, names=name_pinyin)
-    W, H = name_map.width*CELL_SIZE, name_map.height*CELL_SIZE
-    im0 = Image.new('RGBA', (W, H), (255, 255, 255))
-    draw = ImageDraw.Draw(im0)
-    w, h = draw.textsize('303', font=FONT_BIG)
-    draw.text(((W-w)/2,(H-h)/2), '303', fill=(0, 255, 0, 50), font=FONT_BIG)
-    im1 = im0.copy()
-    im_blank = im0.copy()
-    draw = ImageDraw.Draw(im1)
-    for i, j in name_map.new_chrs:
-        draw.text(xy=((X_SHIFT+j)*CELL_SIZE, i*CELL_SIZE),
-                  text=name_map[i, j], fill="black", font=FONT)
+def get_choices(name_map):
+    # for i, j in name_map.new_chrs:
+    #     draw.text(xy=((X_SHIFT+j)*CELL_SIZE, i*CELL_SIZE),
+    #               text=name_map[i, j], fill="black", font=FONT)
     choices = []
     for pos, index, name, pattern in name_map.iter_name(name_map.new_chrs):
         pattern_h, pattern_v = pattern
@@ -42,18 +31,34 @@ def process(filename):
             choices.append(
                 Choice(name, i-index, j, 'v', pattern_v))
             name_map.rest_name.remove(name)
-    all_imgs = []
-    all_imgs += animate(im0, choices, FONT, 'black', copy=False)
-    shuffle(choices)
-    all_imgs += animate(im1, choices, FONT_BOLD, 'red')
-    im_blank.save(f'product\\{filename}.gif', save_all=True,
-                  append_images=all_imgs, duration=500)
+    return choices
+
+
+def process(filename, output, text):
+    name_map = NameMap(
+        seed=filename, names=name_pinyin)
+    choices = get_choices(name_map)
+    W, H = name_map.width*CELL_SIZE, name_map.height*CELL_SIZE
+    im0 = Image.new('RGBA', (W, H), (255, 255, 255))
+    draw = ImageDraw.Draw(im0)
+    w, h = draw.textsize(text, font=FONT_BIG)
+    draw.text(((W-w)/2, (H-h)/2), text, fill=(0, 255, 0, 50), font=FONT_BIG)
+    im1 = im0.copy()
+    im_blank = im0.copy()
+    draw = ImageDraw.Draw(im1)
+
+    def all_imgs():
+        for i in animate(im0, choices, FONT, 'black', copy=False):
+            yield i
+        shuffle(choices)
+        for i in animate(im1, choices, FONT_BOLD, 'red'):
+            yield i
+    im_blank.save(output, save_all=True,
+                  append_images=all_imgs(), duration=500)
 
 
 def animate(im, choices, font, color='red', copy=True):
-    imgs = []
     for choice in choices:
-        # imc = im.copy()
         imc = im.copy() if copy else im
         draw = ImageDraw.Draw(imc)
         if choice.direction == 'h':
@@ -69,10 +74,9 @@ def animate(im, choices, font, color='red', copy=True):
                 draw.text(xy=((X_SHIFT+choice.x)*CELL_SIZE, (choice.y+i)*CELL_SIZE),
                           text=ch, fill=color, font=font)
         if copy:
-            imgs.append(imc)
+            yield imc
         else:
-            imgs.append(imc.copy())
-    return imgs
+            yield imc.copy()
 
 
 # tmp_map = NameMap.empty(name_map.height, name_map.width)
@@ -83,8 +87,21 @@ def animate(im, choices, font, color='red', copy=True):
 #     tmp_map[choice.y:choice.y+len(choice.name), choice.x] =\
 #         choice.name
 # # print(tmp_map.text_plain())
-def main():
-    for i in listdir('better'):
-        process(i)
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', '-d', required=True,
+                        help='Name data file')
+    parser.add_argument('--input', '-i', required=True,
+                        help='Input name map file')
+    parser.add_argument('--text', '-t', required=False, default='303',
+                        help='Text to draw')
+    parser.add_argument('--output', '-o', required=True,
+                        help='Output directory')
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    main()
+    args = get_args()
+    name_pinyin = convert_name(args.data)
+    process(args.input, args.output, args.text)
